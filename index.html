@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/canvas.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase.js"></script>
+    <script>
+// Initialize Firebase
+var config = {
+apiKey: "AIzaSyByBpXUiqDif6y1wanNkUvDPSvJ__XgKfg",
+authDomain: "testfirebase-c475d.firebaseapp.com",
+databaseURL: "https://testfirebase-c475d.firebaseio.com",
+storageBucket: "testfirebase-c475d.appspot.com",
+messagingSenderId: "768179532112"
+};
+firebase.initializeApp(config);
+</script>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+</head>
+
+<body>
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper  light-green darken-3">
+                <a href="index.html" class="brand-logo center">
+                    <h4>Let Them Grow</h4>
+                </a>
+                <a href="index.html" class="brand-logo right"><img class="nav-logo" alt="Brand" src="img/logo.png"></a>
+            </div>
+        </nav>
+    </div>
+    <div id="Form" class="cosa">
+        <h3 class="center">Registrar nuevo asentamiento</h3>
+        <div class="row">
+            <div class="col s6 center">
+                <h5>Representante:</h5>
+                <input type="text" id="representante" name="representante" size="30" maxlength="50">
+            </div>
+            <div class="col s6 center">
+                <h5>Comunidad:</h5>
+                <input type="text" id="comunidad" name="comunidad" size="30" maxlength="50">
+            </div>
+            <div class="col s6 center">
+                <h5> Contacto:</h5>
+                <input type="text" id="contacto" name="contacto" size="30" maxlength="50">
+            </div>
+            <div class="col s6 center">
+                <h5>Meta de recolección de donativos:</h5>
+                <input type="text" id="monto" name="monto" size="30" maxlength="50">
+            </div>
+            <div class="col s12">
+                <h5>Objetivo:</h5>
+                <textarea id="objetivo" name="objetivo" rows="20" cols="30"></textarea>
+            </div>
+            <div class="col offset-s4 s4 center">
+                <input class="btn-large waves-effect waves-light light-green darken-3" type="submit" name="Enviar" value="Registrar" onclick="return Add()">
+            </div>
+        </div>
+    </div>
+    <div id="Canvas" class="wrap">
+    </div>.<br>
+    <h1 class="center">nada nada  Asentamientos identificados</h1>
+    <div id="asentamientos" class="row">
+
+    </div>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script>
+var lat;
+var lng;
+var mapCanvas = document.getElementById('Canvas');
+var mapOptions = {
+center: new google.maps.LatLng(20.6558593, -103.3393273),
+zoom: 12,
+mapTypeId: google.maps.MapTypeId.ROADMAP
+}
+var map = new google.maps.Map(mapCanvas, mapOptions);
+function addMarker(asentamiento){
+
+   var contentString = asentamiento.Comunidad;
+
+   var infowindow = new google.maps.InfoWindow({
+     content: contentString
+   })
+   var marker = new google.maps.Marker({
+   map: map,
+   position: {lat:asentamiento.CoordenadasX, lng:asentamiento.CoordenadasY},
+   title: asentamiento.Comunidad+'\n'+asentamiento.Objetivo+'\n'+asentamiento.Representante+' - '+asentamiento.Contacto
+   });
+   marker.addListener("hover",function(){
+     infowindow.open(map, marker);
+   })
+ }
+function initialize()
+{
+
+map.addListener('click',function(event) {
+lat = event.latLng.lat()
+lng =  event.latLng.lng()
+var marker = new google.maps.Marker({
+map: map,
+position: {lat:lat, lng:lng},
+title: 'Place 1'
+});
+document.getElementById('Form').style.cssText = 'visibility: visible;  height: auto';
+document.getElementById('Canvas').style.cssText = 'visibility: hidden';
+});
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+function clear(){
+document.getElementById('Canvas').style.cssText = 'visibility: visible';
+document.getElementById('Form').style.cssText = 'visibility: hidden;  height: 0';
+}
+//var num=0;
+function Add() {
+var id = document.getElementById("comunidad").value;
+//num = num+1;
+var rep = document.getElementById("representante").value;
+var cont = document.getElementById("contacto").value;
+var obj = document.getElementById("objetivo").value;
+var mon = document.getElementById("monto").value;
+firebase.database().ref(id).set({
+Representante: rep,
+Comunidad: id,
+Contacto: cont,
+Objetivo: obj,
+Monto: mon,
+CoordenadasX: lat,
+CoordenadasY: lng,
+});
+clear();
+}
+    $(document).ready(function(){
+        var $toastContent = $('<span>Presiona en el mapa para agregar un nuevo asentamiento</span>');
+            Materialize.toast($toastContent, 5000);
+        var $asentamientos = $('#asentamientos');
+        $.ajax({
+            type: 'GET',
+            url: 'https://testfirebase-c475d.firebaseio.com/.json',
+            success: function(asentamientos){
+            $.each(asentamientos, function(i, asentamiento){
+                    $asentamientos.append('<div class="myCard z-depth-3 light-green darken-3"><h3>'+asentamiento.Comunidad+'</h3><img class="miCard" src="http://d8nz9a88rwsc9.cloudfront.net/wp-content/uploads/2014/08/asentamiento_irregular.jpg"><p>Representante: ' + asentamiento.Representante + '</p><p>Contacto: ' + asentamiento.Contacto + '</p><p>Objetivo: ' + asentamiento.Objetivo + '</p><p>Meta de donativos : ' + asentamiento.Monto +'$ MXN</p><a class="btn-large disabled">Donar</a></div>')                  
+                    addMarker(asentamiento);
+                });
+            }
+        });
+    });
+    
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+@font-face{
+    font-family: bold;
+    src: url("../fonts/Avenir/AvenirNextLTPro-Bold.otf");
+}
+@font-face{
+    font-family: light;
+   src: url("../fonts/Avenir/AvenirNextLTPro-Regular.otf");
+}
+body{
+    font-family: light;
+    overflow-x: hidden;
+}
+h1, h2, h3, h4, h5, h6{
+    font-family: bold;
+}
+.nav-logo{
+    position: absolute;
+    top: 68vh;
+    right: 0;
+    height:200px;
+}
+.myCard{
+    align-content: center;
+    padding: 20px;
+    margin: 2.5%;
+    margin-top: .5%;
+    margin-bottom: .5%;
+    width: 28.3%;
+    border-radius: 3px;
+    color: white;
+    float: left;
+    text-align: center;
+    min-height: 580px;
+}
+.miCard{
+    border-radius: 3px;
+    width: 98%;
+}
+.poscanvas{
+    margin-top: 10vh;
+}
+#Form{
+    padding-right: 10%;
+    padding-left: 10%;
+}
